@@ -1,0 +1,72 @@
+DROP DATABASE IF EXISTS sjpc;
+CREATE DATABASE sjpc;
+USE sjpc;
+
+CREATE TABLE calls(
+CDTS VARCHAR(50),
+EID int,
+START_DATE VARCHAR(30),
+CALL_NUMBER VARCHAR(30),
+PRIORITY int,
+REPORT_DATE varchar(30),
+OFFENSE_DATE varchar(30),
+OFFENSE_TIME varchar(20),
+CALLTYPE_CODE varchar(10),
+CALL_TYPE varchar(60),
+FINAL_DISPO_CODE varchar(10),
+FINAL_DISPO varchar(60),
+COMMON_PLACE_NAME VARCHAR(60),
+ADDRESS VARCHAR(60),
+CITY VARCHAR(10),
+STATE VARCHAR(2))
+
+SELECT * FROM calls;
+
+-- Selecting the data that is going to be used
+SELECT CDTS,CITY,STATE,ADDRESS, REPORT_DATE, PRIORITY,CALL_TYPE, FINAL_DISPO
+FROM calls
+ORDER BY CDTS ASC;
+
+-- Call Priority total and percentage
+-- Statement shows the total prioity of the calls and the percentages of the priorities in the total numb of calls
+SELECT SUM(CASE WHEN PRIORITY = 4 THEN 1 ELSE 0 END) as "Total number of 4 priority",
+SUM(CASE WHEN PRIORITY = 4 THEN 1 ELSE 0 END)/SUM(CASE WHEN PRIORITY THEN 1 ELSE 0 END) * 100 as "4 priority percentage",
+SUM(CASE WHEN PRIORITY = 5 THEN 1 ELSE 0 END) as "Total number of 5 priority",
+SUM(CASE WHEN PRIORITY = 5 THEN 1 ELSE 0 END)/SUM(CASE WHEN PRIORITY THEN 1 ELSE 0 END) * 100 as "5 priority percentage",
+SUM(CASE WHEN PRIORITY = 6 THEN 1 ELSE 0 END) as "Total number of 6 priority",
+SUM(CASE WHEN PRIORITY = 6 THEN 1 ELSE 0 END)/SUM(CASE WHEN PRIORITY THEN 1 ELSE 0 END) * 100 as "6 priority percentage",
+SUM(CASE WHEN PRIORITY = 1 THEN 1 ELSE 0 END) as "Total number of 1 priority",
+SUM(CASE WHEN PRIORITY = 1 THEN 1 ELSE 0 END)/SUM(CASE WHEN PRIORITY THEN 1 ELSE 0 END) * 100 as "1 priority percentage",
+SUM(CASE WHEN PRIORITY = 2 THEN 1 ELSE 0 END) as "Total number of 2 priority",
+SUM(CASE WHEN PRIORITY = 2 THEN 1 ELSE 0 END)/SUM(CASE WHEN PRIORITY THEN 1 ELSE 0 END) * 100 as "2 priority percentage",
+SUM(CASE WHEN PRIORITY = 3 THEN 1 ELSE 0 END) as "Total number of 3 priority",
+SUM(CASE WHEN PRIORITY = 3 THEN 1 ELSE 0 END)/SUM(CASE WHEN PRIORITY THEN 1 ELSE 0 END) * 100 as "3 priority percentage"
+FROM calls;
+
+-- Total final dispositions that were canceled and their percentages
+SELECT FINAL_DISPO,SUM(CASE WHEN FINAL_DISPO = 'Canceled' THEN 1 ELSE 0 END) as "Total Canceled",
+SUM(CASE WHEN FINAL_DISPO = 'Canceled' THEN 1 ELSE 0 END)/COUNT(CASE WHEN FINAL_DISPO THEN 1 ELSE 0 END) * 100 as "Total Canceled %"
+FROM calls;
+
+-- Total canceled final disposition for each priority
+SELECT PRIORITY, SUM(CASE WHEN FINAL_DISPO = 'Canceled' THEN 1 ELSE 0 END) as "Total Canceled"
+FROM calls
+GROUP BY PRIORITY
+ORDER BY PRIORITY ASC;
+
+-- Call type had a Disturbance
+SELECT SUM(CASE WHEN CALL_TYPE LIKE "%DISTURBANCE%" THEN 1 ELSE 0 END) AS "Disturbance total",
+SUM(CASE WHEN CALL_TYPE LIKE "%DISTURBANCE%" THEN 1 ELSE 0 END) / COUNT(CASE WHEN CALL_TYPE THEN 1 ELSE 0 END) * 100 AS '%'
+FROM calls
+ORDER BY CDTS ASC;
+
+-- Priority had the most Disturbances
+SELECT PRIORITY, SUM(CASE WHEN CALL_TYPE LIKE "%DISTURBANCE%" THEN 1 ELSE 0 END) AS "Disturbance total",
+SUM(CASE WHEN CALL_TYPE LIKE "%DISTURBANCE%" THEN 1 ELSE 0 END) / COUNT(CASE WHEN CALL_TYPE THEN 1 ELSE 0 END) * 100 AS '%'
+FROM calls
+GROUP BY PRIORITY
+ORDER BY  SUM(CASE WHEN CALL_TYPE LIKE "%DISTURBANCE%" THEN 1 ELSE 0 END) DESC;
+
+
+
+
